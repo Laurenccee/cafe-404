@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Noto+Serif:wght@400;700&display=swap');
+
+/* Custom global styles */
+body {
+  @apply bg-background;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+}
+span,
+p,
+a,
+li {
+  font-family: var(--font-serif);
+}
+
+button {
+  @apply bg-primary text-white rounded px-4 py-2;
+}
+
+/* Custom Theme */
+:root {
+  --color-primary: #2d5a27; /* Example primary color */
+  --color-secondary: #6f4e37;
+  --color-tertiary: #e4e4cc;
+  --color-tertiary-light: #f2f2e6;
+  --color-accent: #f5f5dc;
+  --color-neutral: #2c2c2c;
+  --color-background: #fcf9f8;
+
+  --font-sans: 'Noto Serif', sans-serif;
+  --font-serif: 'Manrope', serif;
+}
+
+/* Define CSS Variables for the Theme */
+
+/* Apply theme colors */
+
+.font-sans-serif {
+  font-family: var(--font-sans);
+}
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.text-title {
+  color: var(--color-primary);
+  font-family: var(--font-sans-serif);
+}
+
+.text-body {
+  color: var(--color-secondary);
+  font-family: var(--font-serif);
+}
+
+.text-subtitle {
+  color: var(--color-secondary);
+  font-family: var(--font-serif);
+}
+
+.border-secondary {
+  border-color: var(--color-secondary);
+}
+
+/* Apply the Theme to Tailwind Classes */
+@layer base {
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[color:var(--primary-color)] text-white flex justify-center w-full items-center rounded-md gap-2 px-4 py-2;
+  }
+
+  .btn-secondary {
+    @apply bg-[color:var(--secondary-color)] text-white py-2 px-4 rounded;
+  }
+}
+
+@layer utilities {
+  .theme-bg {
+    background-color: var(--background-color);
+  }
+
+  .theme-text {
+    color: var(--text-color);
+  }
+}
+
+/* Explicitly define bg-background class */
+.bg-background {
+  background-color: var(--color-background);
+}
+.bg-accent {
+  background-color: var(--color-accent);
+}
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+.bg-tertiary {
+  background-color: var(--color-tertiary);
+}
