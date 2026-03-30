@@ -18,6 +18,7 @@ use App\Features\Admin\Menu\Controllers\MenuController;
 use App\Features\Admin\Menu\Models\MenuModel;
 use App\Features\Admin\Order\Controllers\OrderController;
 use App\Features\Admin\Order\Models\OrderModels;
+use App\Features\Admin\Dashboard\Controllers\DashboardController;
 
 function protect_admin_only($basePath)
 {
@@ -47,7 +48,6 @@ function protect_logged_in($basePath)
         exit;
     }
 }
-// 2. Initialize Core Services
 $db = Database::getConnection();
 $userModel = new UserModel($db);
 $authService = new AuthService($db);
@@ -61,14 +61,24 @@ $menuController = new MenuController($menuModel, $authService);
 $orderModel = new OrderModels($db);
 $orderController = new OrderController($orderModel, $authService, $menuModel);
 
-// 3. Routing Logic
+$dashboardController = new DashboardController($authService, $orderModel);
+
 $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$basePath = '/cafe_404'; // Adjust if project folder changes
+$basePath = '/cafe_404';
 $route = rtrim(str_replace($basePath, '', $request), '/') ?: '/';
 
 switch ($route) {
     case '/':
     case '/login':
+        if (isset($_SESSION['is_logged_in'])) {
+            $role = (int) ($_SESSION['role_id'] ?? -1);
+            if ($role === 0 || $role === 1) {
+                header('Location: ' . $basePath . '/dashboard');
+            } else {
+                header('Location: ' . $basePath . '/pos');
+            }
+            exit;
+        }
         $authController->handleLogin();
         break;
 
@@ -82,7 +92,7 @@ switch ($route) {
 
     case '/dashboard':
         protect_manager_access($basePath);
-        $authController->getAdmin();
+        $dashboardController->index();
         break;
 
     case '/users':

@@ -10,15 +10,12 @@
 </head>
 
 <body class="w-full bg-background min-h-screen">
-
-    <!-- Main Content Injection -->
     <?= isset($content) ? $content : '' ?>
-
-    <!-- Contextual Scripts -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
     </script>
+    <script src="/cafe_404/public/assets/js/itemFilter.js?v=<?= time() ?>" defer></script>
 </body>
 
 </html>

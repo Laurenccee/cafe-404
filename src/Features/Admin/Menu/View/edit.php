@@ -92,6 +92,20 @@ $form = $props['form'] ?? '';
                                     "leading" => "",
                                     "placeholder" => "Select Category",
                                 ]) ?>
+                                <?= ComboBoxField::render([
+                                    "name" => "is_available",
+                                    "value" => $item['is_available'],
+                                    "options" => (
+                                        array_map(fn($item) => [
+                                            "value" => $item['id'],
+                                            "label" => $item['label']
+                                        ], $availability)
+                                    ),
+
+                                    "label" => "Availability",
+                                    "leading" => "",
+                                    "placeholder" => "Select Availability",
+                                ]) ?>
                                 <?= InputField::render([
                                     "name" => "price",
                                     "type" => "text",

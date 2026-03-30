@@ -11,11 +11,12 @@ class ComboBoxField
         $label = $props['label'] ?? '';
         $options = $props['options'] ?? [];
         $selected = $props['selected'] ?? $props['value'] ?? '';
+        $placeholder = $props['placeholder'] ?? 'Select an option';
 
         $id = "combo_" . uniqid();
 
         // Find the initial label for the selected value
-        $initialLabel = "";
+        $initialLabel = $placeholder;
         foreach ($options as $opt) {
             if ($opt['value'] == $selected) {
                 $initialLabel = $opt['label'];
@@ -43,7 +44,7 @@ class ComboBoxField
                     <i data-lucide='chevron-down' class='chevron size-4 transition-transform'></i>
                 </div>
 
-                <input type='hidden' name='{$name}' value='{$selected}' class='combo-input'>
+                <input type='hidden' name='{$name}' value='{$selected}' class='combo-input placeholder='{$placeholder}''>
 
                 <div class='combo-menu hidden absolute top-[105%] left-0 w-full bg-background border-2 border-secondary rounded-md shadow-lg z-50 overflow-hidden'>
                     <div class='flex flex-col max-h-60 capitalize overflow-y-auto'>

@@ -83,6 +83,22 @@ class Database
             $stmt->execute([$cat]);
         }
 
+        $sqlCats = "CREATE TABLE IF NOT EXISTS availability (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            label VARCHAR(50) NOT NULL UNIQUE
+        ) ENGINE=InnoDB;";
+        $pdo->exec($sqlCats);
+
+        $availability = [
+            'Available',
+            'Sold Out',
+            'Not Available',
+        ];
+        foreach ($availability as $availabilityLabel) {
+            $stmt = $pdo->prepare("INSERT IGNORE INTO availability (label) VALUES (?)");
+            $stmt->execute([$availabilityLabel]);
+        }
+
         $sqlMenus = "CREATE TABLE IF NOT EXISTS menu_items (
         id INT AUTO_INCREMENT PRIMARY KEY,
         product_code VARCHAR(20) UNIQUE NOT NULL,

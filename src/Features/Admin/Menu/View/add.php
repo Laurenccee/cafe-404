@@ -65,22 +65,28 @@ $form = $props['form'] ?? '';
                             <div class="flex gap-2">
                                 <?= ComboBoxField::render([
                                     "name" => "category_id",
-                                    "options" => array_merge(
-                                        [
-                                            [
-                                                "value" => "",
-                                                "label" => "Select Category"
-                                            ]
-                                        ],
+                                    "options" =>
                                         array_map(fn($cat) => [
                                             "value" => $cat['id'],
                                             "label" => $cat['category_name']
                                         ], $categories),
-                                    ),
 
                                     "label" => "Category",
                                     "leading" => "",
                                     "placeholder" => "Select Category",
+                                ]) ?>
+                                <?= ComboBoxField::render([
+                                    "name" => "is_available",
+                                    "options" => (
+                                        array_map(fn($item) => [
+                                            "value" => $item['id'],
+                                            "label" => $item['label']
+                                        ], $availability)
+                                    ),
+
+                                    "label" => "Availability",
+                                    "leading" => "",
+                                    "placeholder" => "Select Availability",
                                 ]) ?>
                                 <?= InputField::render([
                                     "name" => "price",

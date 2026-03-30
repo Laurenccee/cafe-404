@@ -17,11 +17,9 @@ class AuthService
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
-            // Start session if not already active
             if (session_status() === PHP_SESSION_NONE)
                 session_start();
 
-            // Store details for the "Editorial Ledger"
             $_SESSION['is_logged_in'] = true;
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];

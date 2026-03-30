@@ -47,10 +47,13 @@ class MenuModel
         $stmt->execute(['id' => $id]);
         return $stmt->fetch();
     }
-
     public function getAllCategories()
     {
         return $this->db->query("SELECT * FROM categories ORDER BY category_name ASC")->fetchAll();
+    }
+    public function getAllAvailability()
+    {
+        return $this->db->query("SELECT * FROM availability ORDER BY label ASC")->fetchAll();
     }
 
     public function addItem($data)
@@ -62,7 +65,7 @@ class MenuModel
     }
     public function updateItem($id, $data)
     {
-        $sql = "UPDATE menu_items SET name = :name, description = :description, price = :price, category_id = :category_id, image_path = :image_path, pos_x = :pos_x, pos_y = :pos_y WHERE id = :id";
+        $sql = "UPDATE menu_items SET name = :name, is_available = :is_available, description = :description, price = :price, category_id = :category_id, image_path = :image_path, pos_x = :pos_x, pos_y = :pos_y WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         $data['id'] = $id;
         return $stmt->execute($data);
@@ -91,5 +94,94 @@ class MenuModel
         $stmt->execute();
 
         return $stmt->fetchAll();
+    }
+
+    public function deleteItem()
+    {
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            header('Location: /cafe_404/menu?error=missing_id');
+            exit;
+        }
+
+        if ((int) $_SESSION['role_id'] !== 0) {
+            header('Location: /cafe_404/menu?error=unauthorized');
+            exit;
+        }
+
+        $stmt = $this->db->prepare("DELETE FROM menu_items WHERE id = ?");
+        $success = $stmt->execute([$id]);
+
+        if ($success) {
+            header('Location: /cafe_404/menu?success=item_deleted');
+        } else {
+            header('Location: /cafe_404/menu?error=delete_failed');
+        }
+        exit;
+    }
+    public function getFilteredItems($filters, $limit, $offset)
+    {
+        $search = $filters['search'] ?? null;
+        $category = $filters['category'] ?? null;
+        $availability = $filters['availability'] ?? null;
+
+        $sql = "SELECT m.*, c.category_name 
+            FROM menu_items m 
+            LEFT JOIN categories c ON m.category_id = c.id 
+            WHERE 1=1";
+
+        $params = [];
+
+        if ($search) {
+            $sql .= " AND m.name LIKE :search";
+            $params[':search'] = "%$search%";
+        }
+
+        if ($category) {
+            $sql .= " AND m.category_id = :category";
+            $params[':category'] = $category;
+        }
+
+        if ($availability) {
+            $sql .= " AND m.is_available = :availability";
+            $params[':availability'] = $availability;
+        }
+
+        $sql .= " ORDER BY m.created_at DESC LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+
+        $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, \PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+    public function getFilteredCount($filters)
+    {
+        $sql = "SELECT COUNT(*) FROM menu_items WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['search'])) {
+            $sql .= " AND name LIKE :search";
+            $params[':search'] = "%{$filters['search']}%";
+        }
+        if (!empty($filters['category'])) {
+            $sql .= " AND category_id = :category";
+            $params[':category'] = $filters['category'];
+        }
+        if (!empty($filters['availability'])) {
+            $sql .= " AND is_available = :availability";
+            $params[':availability'] = $filters['availability'];
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchColumn();
     }
 }

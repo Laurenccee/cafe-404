@@ -2,6 +2,7 @@
 
 namespace App\Features\Admin\Order\Models;
 
+use PDO;
 class OrderModels
 {
     private $db;
@@ -10,16 +11,11 @@ class OrderModels
     {
         $this->db = $db;
     }
-
-    /**
-     * Creates a full order with its items using a Transaction
-     */
     public function createOrder($orderData, $items)
     {
         try {
             $this->db->beginTransaction();
 
-            // 1. Insert into 'orders' (Trailing commas removed)
             $sqlOrder = "INSERT INTO orders (
                 order_number, user_id, total_amount, 
                 amount_paid, change_amount
@@ -33,7 +29,6 @@ class OrderModels
 
             $orderId = $this->db->lastInsertId();
 
-            // 2. Insert items (Mapped to your JS keys: id and price)
             $sqlItem = "INSERT INTO order_items (
                 order_id, menu_item_id, quantity, unit_price
             ) VALUES (
@@ -61,20 +56,45 @@ class OrderModels
         }
     }
 
-    public function getAllOrders()
+    public function getAllOrders($filters = [])
     {
-        // FIXED: Removed payment_methods join to match your new schema
-        $sql = "SELECT o.*, u.username 
-                FROM orders o
-                LEFT JOIN users u ON o.user_id = u.id
-                ORDER BY o.created_at DESC";
+        $sql = "SELECT 
+                o.*, 
+                u.username,
+                GROUP_CONCAT(CONCAT('(', oi.quantity, ')x ', m.name) SEPARATOR ', ') AS item_summary
+            FROM orders o
+            LEFT JOIN users u ON o.user_id = u.id
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            LEFT JOIN menu_items m ON oi.menu_item_id = m.id
+            WHERE 1=1";
 
-        return $this->db->query($sql)->fetchAll();
+        $params = [];
+
+        if (!empty($filters['search'])) {
+            $sql .= " AND o.order_number LIKE :search";
+            $params[':search'] = '%' . $filters['search'] . '%';
+        }
+
+        if (!empty($filters['from'])) {
+            $sql .= " AND DATE(o.created_at) >= :from";
+            $params[':from'] = $filters['from'];
+        }
+
+        if (!empty($filters['to'])) {
+            $sql .= " AND DATE(o.created_at) <= :to";
+            $params[':to'] = $filters['to'];
+        }
+
+        $sql .= " GROUP BY o.id ORDER BY o.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getOrderItems($orderId)
     {
-        // FIXED: Now correctly queries the order_items table for specific items
         $sql = "SELECT oi.*, m.name as item_name 
                 FROM order_items oi
                 JOIN menu_items m ON oi.menu_item_id = m.id
@@ -82,6 +102,25 @@ class OrderModels
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['order_id' => $orderId]);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getPopularItems($limit = 4)
+    {
+        $sql = "SELECT 
+            m.*, 
+            c.category_name,
+            CAST(SUM(oi.quantity) AS UNSIGNED) as sold 
+        FROM order_items oi
+        JOIN menu_items m ON oi.menu_item_id = m.id
+        LEFT JOIN categories c ON m.category_id = c.id
+        GROUP BY m.id
+        ORDER BY sold DESC
+        LIMIT :limit";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
 }

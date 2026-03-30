@@ -3,9 +3,6 @@ use App\Shared\Components\Sidebar\Sidebar;
 use App\Shared\Components\Button\Button;
 use App\Shared\Components\ComboBox\ComboBoxField;
 use App\Shared\Components\InputField\InputField;
-use App\Shared\Components\Badge;
-use App\Shared\Components\TextArea;
-use App\Shared\Components\FileDrop;
 
 $pageTitle = 'The Editorial Barista | Management';
 $now = new DateTimeImmutable();
@@ -18,6 +15,13 @@ $categories = $categories ?? [];
 $menuItems = $menuItems ?? [];
 $inStockCount = $inStockCount ?? 0;
 $adminInfo = $adminInfo ?? ['username' => 'Guest'];
+
+$availabilityMap = [];
+foreach ($availability as $status) {
+    $availabilityMap[$status['id']] = [
+        'label' => $status['label'],
+    ];
+}
 ?>
 
 <div class="flex  h-screen overflow-hidden bg-background">
@@ -54,18 +58,19 @@ $adminInfo = $adminInfo ?? ['username' => 'Guest'];
                     </p>
                 </div>
                 <div class="p-6 col-span-4 bg-[#F0EDED] rounded-xl">
-                    <div class="flex items-start justify-between">
-                        <span class="text-sm opacity-60 font-bold uppercase tracking-widest">Categories</span>
-                    </div>
-                    <div class="flex gap-4 mt-4">
+                    <div class="flex gap-4">
                         <?= InputField::render([
+                            "label" => "Search",
                             "type" => "text",
                             "trailing" => "search",
-                            "disabled" => true,
-                            "placeholder" => "Search Item..."
+                            "value" => $_GET['search'] ?? '',
+                            "disabled" => false,
+                            "placeholder" => "Search Item...",
+                            "name" => "search"
 
                         ]) ?>
                         <?= ComboBoxField::render([
+                            "label" => "Category",
                             "options" => array_merge(
                                 [
                                     [
@@ -78,13 +83,32 @@ $adminInfo = $adminInfo ?? ['username' => 'Guest'];
                                     "label" => $cat['category_name']
                                 ], $categories),
                             ),
-
-
+                            "value" => $_GET['category'] ?? '',
                             "placeholder" => "Filter by Category",
                             "disabled" => true,
+                            "name" => "category"
+                        ]) ?>
+                        <?= ComboBoxField::render([
+                            "label" => "Availability",
+                            "options" => array_merge(
+                                [
+                                    [
+                                        "value" => "",
+                                        "label" => "All"
+                                    ]
+                                ],
+                                array_map(fn($item) => [
+                                    "value" => $item['id'],
+                                    "label" => $item['label']
+                                ], $availability),
+
+                            ),
+                            "value" => $_GET['available'] ?? '',
+                            "placeholder" => "Filter by Availability",
+                            "disabled" => true,
+                            "name" => "available"
                         ]) ?>
                     </div>
-
                 </div>
             </section>
 
@@ -100,10 +124,13 @@ $adminInfo = $adminInfo ?? ['username' => 'Guest'];
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     style="object-position: <?= $item['pos_x'] ?>% <?= $item['pos_y'] ?>%;">
                                 <div class="absolute top-3 left-3">
-                                    <?= $item['is_available']
-                                        ? '<span class="px-3 py-1 bg-emerald-500/90 opacity-80 hover:opacity-100 text-white text-[10px] font-bold uppercase tracking-widest rounded-full backdrop-blur-md">In Stock</span>'
-                                        : '<span class="px-3 py-1 bg-rose-500/90 opacity-80 hover:opacity-100 text-white text-[10px] font-bold uppercase tracking-widest rounded-full backdrop-blur-md">Sold Out</span>'
-                                        ?>
+                                    <?php
+                                    $status = $availabilityMap[$item['is_available']] ?? ['label' => 'Unknown'];
+                                    ?>
+                                    <span
+                                        class="px-3 py-1 text-white text-[10px] font-bold uppercase rounded-full backdrop-blur-md">
+                                        <?= $status['label'] ?>
+                                    </span>
                                 </div>
                             </div>
 
@@ -165,3 +192,11 @@ $adminInfo = $adminInfo ?? ['username' => 'Guest'];
 $content = ob_get_clean();
 require_once ROOT_PATH . 'src/Shared/Layouts/layout.php';
 ?>
+
+<script>
+    function confirmDelete(id, name) {
+        if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+            window.location.href = `/cafe_404/menu/delete?id=${id}`;
+        }
+    }
+</script>

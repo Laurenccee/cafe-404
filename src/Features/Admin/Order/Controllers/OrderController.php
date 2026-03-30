@@ -17,27 +17,33 @@ class OrderController
     public function index()
     {
         $userInfo = $this->authService->getCurrentUser();
-        $orderItems = $this->orderModel->getAllOrders();
         $categories = $this->menuModel->getAllCategories();
-        $categoryId = $_GET['category'] ?? null;
+        $availability = $this->menuModel->getAllAvailability();
 
-        if ($categoryId) {
-            // Fetch only items in this category
-            $menuItems = $this->menuModel->getMenuItemsByCategory($categoryId);
-        } else {
-            // Fetch everything
-            $menuItems = $this->menuModel->getAllItems();
-        }
+        $filters = [
+            'search' => $_GET['search'] ?? null,
+            'category' => $_GET['category'] ?? null,
+            'availability' => $_GET['availability'] ?? null
+        ];
 
+        $orders = $this->orderModel->getAllOrders();
+        $menuItems = $this->menuModel->getFilteredItems($filters, 50, 0);
 
         require_once ROOT_PATH . 'src/Features/Public/Pos/View/pos.php';
     }
     public function history()
     {
-        $orders = $this->orderModel->getAllOrders();
+        $filtersOrder = [
+            'search' => $_GET['search'] ?? null,
+            'from' => $_GET['from'] ?? null,
+            'to' => $_GET['to'] ?? null
+        ];
 
-        $dailyTotal = array_sum(array_column($orders, 'total_amount'));
-        $avgOrder = count($orders) > 0 ? $dailyTotal / count($orders) : 0;
+        $orders = $this->orderModel->getAllOrders($filtersOrder);
+
+        $totalTransactions = count($orders);
+        $lifetimeTotal = array_sum(array_column($orders, 'total_amount'));
+        $avgOrder = $totalTransactions > 0 ? $lifetimeTotal / $totalTransactions : 0;
 
         $userInfo = $this->authService->getCurrentUser();
 

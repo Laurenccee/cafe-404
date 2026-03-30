@@ -1,0 +1,32 @@
+# ☕ Cafe 404 Project Tracking
+
+## 🔴 HIGH PRIORITY (Core Functionality)
+
+- [/] **Menu Toggle Logic**: Implement `toggleStock()` AJAX call in `MenuController.php`.
+- [/] **Menu Delete**: Add `softDelete` column to `menu_items` to preserve order history.
+- [/] **POS Checkout**: Finalize `processCheckout()` to deduct stock and save to `orders` table.
+- [/] **Role-Based Access**: Restrict `User Management` in Sidebar to `role_id === 0` (Admin) only.
+
+## 🟡 MEDIUM PRIORITY (Filtering & UX)
+
+- [/] **Menu Search**: Implement live-search on the Management page using the `InputField`.
+- [/] **Category Filter**: Make the `ComboBoxField` functional for filtering the menu grid.
+- [ ] **Order History Filters**:
+  - [ ] Filter by Date (Today, Last 7 Days, Custom Range).
+  - [ ] Filter by Staff/Barista name.
+- [/] **Stock Status UI**: Sync the "In Stock" badge colors in the POS view with the DB status.
+
+## 🟢 LOW PRIORITY (Analytics & Polish)
+
+- [/] **Dashboard Stats**:
+  - [/] Calculate "Total Items" and "In Stock" dynamically.
+  - [/] Add "Daily Revenue" counter.
+- [/] **Receipt Generation**: Create a CSS print-friendly layout for order confirmation.
+- [/] **Image Upload**: Add "Image Position" (X/Y) sliders to the "Add/Edit Menu" form for perfect cropping.
+
+## ✅ COMPLETED
+
+- [x] Initial POS Interface Layout.
+- [x] Sidebar navigation with active state detection.
+- [x] Staff-specific Top Navbar for POS terminal.
+- [x] Category-based navigation bar in POS.

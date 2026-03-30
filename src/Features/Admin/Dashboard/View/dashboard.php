@@ -29,24 +29,34 @@ ob_start();
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
 
             <div class="lg:col-span-3 grid grid-cols-2 gap-10">
-                <section class="bg-white rounded-xl p-8 flex flex-col gap-6 ">
-                    <h3 class=" font-bold text-lg uppercase opacity-40 tracking-[0.2em]">Today's Income</h3>
+                <section class="bg-white border-2 border-[#6f4e37]/5 rounded-md p-8 flex flex-col gap-6 ">
+                    <h3 class="font-bold text-lg uppercase opacity-40 tracking-[0.2em]">Today's Income</h3>
                     <div class="flex flex-col gap-1">
-                        <p class="serif-display text-subtitle opacity-60">23 Transactions</p>
-                        <p class="serif-display text-title font-semibold text-4xl text-primary">₱8,560.00</p>
+                        <p class="serif-display text-subtitle opacity-60">
+                            <?= $todayCount ?> Transactions
+                        </p>
+                        <p class="serif-display text-title font-semibold text-4xl text-primary">
+                            ₱
+                            <?= number_format($todayIncome, 2) ?>
+                        </p>
                     </div>
                 </section>
 
-                <section class="bg-white rounded-xl p-8 flex flex-col gap-6">
-                    <h3 class=" font-bold text-lg uppercase opacity-40 tracking-[0.2em]">Monthly Income</h3>
+                <section class="bg-white border-2 border-[#6f4e37]/5 rounded-md p-8 flex flex-col gap-6">
+                    <h3 class="font-bold text-lg uppercase opacity-40 tracking-[0.2em]">Monthly Income</h3>
                     <div class="flex flex-col gap-1">
-                        <p class="serif-display text-subtitle opacity-60">435 Transactions</p>
-                        <p class="serif-display text-title font-semibold text-4xl text-primary">₱120,450.00</p>
+                        <p class="serif-display text-subtitle opacity-60">
+                            <?= $monthlyCount ?> Transactions
+                        </p>
+                        <p class="serif-display text-title font-semibold text-4xl text-primary">
+                            ₱
+                            <?= number_format($monthlyIncome, 2) ?>
+                        </p>
                     </div>
                 </section>
 
                 <section
-                    class="col-span-2 bg-[#2d5a27] rounded-xl p-8 flex flex-col gap-10 relative overflow-hidden group">
+                    class="col-span-2 bg-[#2d5a27] rounded-md p-8 flex flex-col gap-10 relative overflow-hidden group">
                     <div class="flex flex-col gap-2 relative z-10">
                         <h3 class="font-bold text-lg text-white uppercase opacity-80 tracking-[0.2em]">
                             Performance Outlook
@@ -82,53 +92,36 @@ ob_start();
                 </section>
             </div>
 
-            <section class="lg:col-span-2 bg-[#e4e4cc] text-[#6f4e37] p-8 rounded-xl flex flex-col gap-10">
+            <section class="lg:col-span-2 bg-[#e4e4cc] text-[#6f4e37] p-8 rounded-md flex flex-col gap-10">
                 <div class="flex justify-between items-center">
-                    <h2 class="serif-display text-title text-4xl italic">Popular Orders</h2>
+                    <h2 class="serif-display text-title text-3xl italic">Popular Orders</h2>
                     <i data-lucide="trending-up" class="size-6 opacity-70"></i>
                 </div>
 
-                <div class="flex flex-col gap-4">
-                    <?php
-                    $popularOrders = [
-                        ['name' => 'Espresso', 'price' => '150.00', 'sold' => 120],
-                        ['name' => 'Americano', 'price' => '155.00', 'sold' => 95],
-                        ['name' => 'Cortado', 'price' => '170.00', 'sold' => 80],
-                        ['name' => 'Flat White', 'price' => '185.00', 'sold' => 65],
-
-                    ];
-
-                    foreach ($popularOrders as $index => $order): ?>
+                <div class="flex flex-col gap-2">
+                    <?php foreach ($popularOrders as $index => $order): ?>
                         <div
-                            class="flex gap-4 justify-center items-center group cursor-pointer hover:bg-surface-milk p-2 rounded-lg transition-colors">
+                            class="flex gap-4 justify-center items-center group cursor-pointer hover:bg-surface-milk p-2 rounded-md transition-colors">
                             <div class="h-12 w-12 flex items-center justify-center">
-                                <span class="serif-display text-primary font-bold text-sm">0<?= $index + 1 ?></span>
-                            </div>
-                            <div class="flex-1/2">
-                                <p class="text-lg font-bold uppercase tracking-[0.2em] opacity-60">
-                                    <?= $order['name'] ?>
-                                </p>
-                                <p class="serif-display font-semibold text-xs text-primary">₱
-                                    <?= $order['price'] ?>
-                                </p>
+                                <span class="serif-display text-subtitle font-bold text-sm">0<?= $index + 1 ?></span>
                             </div>
                             <div class="flex-1">
-                                <p class="serif-display font-bold text-lg text-primary">
+                                <p class="text-lg text-subtitle font-bold  tracking-[0.2em] ">
+                                    <?= htmlspecialchars($order['name']) ?>
+                                </p>
+                                <p class="serif-display font-semibold text-xs text-subtitle">
+                                    ₱<?= number_format($order['price'], 2) ?>
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="serif-display font-bold text-lg text-subtitle">
                                     <?= $order['sold'] ?>
                                 </p>
+                                <p class="text-xs uppercase opacity-40 font-bold">Sold</p>
                             </div>
                         </div>
                     <?php endforeach; ?>
-
                 </div>
-                <div>
-                    <?= Button::render("View All", [
-                        "href" => "/cafe_404/orders",
-                        "trailing" => 'chevron-right',
-                        'variant' => 'tertiary',
-                    ]); ?>
-                </div>
-
             </section>
         </div>
 
@@ -139,46 +132,61 @@ ob_start();
                     <span>Real-time update of curated orders from the counter.</span>
                 </div>
                 <div class="flex gap-4">
-                    <?= Button::render("Export CSV", [
-                        "href" => "#",
-                        "leading" => 'download',
-                        'variant' => 'secondary',
-                    ]); ?>
                     <?= Button::render("View All", [
-                        "href" => "/cafe_404/orders",
+                        "href" => "/cafe_404/order/history",
                         "trailing" => 'chevron-right',
                         'variant' => 'primary',
                     ]); ?>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl overflow-hidden">
+            <div class="bg-white rounded-md overflow-hidden">
                 <table class="w-full text-left">
                     <thead class="bg-[#F0EDED] text-xs uppercase tracking-[0.2em] font-bold text-secondary">
                         <tr>
                             <th class="px-8 py-5">Ref ID</th>
                             <th class="px-8 py-5">Timestamp</th>
-                            <th class="px-8 py-5">Order Detail</th>
-                            <th class="px-8 py-5 text-right">Method</th>
-                            <th class="px-8 py-5 text-right">Amount</th>
+                            <th class="px-8 py-5">Items Summary</th>
+                            <th class="px-8 py-5 text-right">Total</th>
+                            <th class="px-8 py-5 text-right">Paid</th>
+                            <th class="px-8 py-5 text-right">Change</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#6f4e37]/20">
-                        <tr class="hover:bg-surface-milk/50 transition-colors">
-                            <td class="px-8 py-6  text-xs">#REF-404-001</td>
-                            <td class="px-8 py-6 text-sm opacity-70">14:02 PM</td>
-                            <td class="px-8 py-6 text-sm">Ethiopian Yirgacheffe (V60)</td>
-                            <td class="px-8 py-6 text-right text-sm uppercase tracking-widest">G-Cash</td>
-                            <td class="px-8 py-6 text-right text-sm text-title">₱180.00</td>
-                        </tr>
-                        <tr class="hover:bg-slate-100 transition-colors">
-                            <td class="px-8 py-6  text-xs">#REF-404-001</td>
-                            <td class="px-8 py-6 text-sm opacity-70">14:02 PM</td>
-                            <td class="px-8 py-6 text-sm">Ethiopian Yirgacheffe (V60)</td>
-                            <td class="px-8 py-6 text-right text-sm uppercase tracking-widest">G-Cash</td>
-                            <td class="px-8 py-6 text-right text-sm text-title">₱180.00</td>
-                        </tr>
+                        <?php foreach ($recentOrders as $order): ?>
+                            <tr class="hover:bg-surface-milk/30 transition-colors group">
+                                <td class="px-8 py-6 text-xs font-bold text-subtitle tracking-tight">
+                                    #<?= htmlspecialchars($order['order_number']) ?>
+                                </td>
 
+                                <td class="px-8 py-6">
+                                    <p class="text-sm font-semibold text-title leading-none mb-1">
+                                        <?= (new DateTime($order['created_at']))->format('M d, Y') ?>
+                                    </p>
+                                    <p class="text-xs opacity-50 text-subtitle uppercase tracking-widest">
+                                        <?= (new DateTime($order['created_at']))->format('h:i A') ?>
+                                    </p>
+                                </td>
+
+                                <td class="px-8 py-6 max-w-[350px]">
+                                    <p class="text-sm text-subtitle italic line-clamp-2 truncate leading-relaxed">
+                                        <?= htmlspecialchars($order['item_summary'] ?? 'No items recorded') ?>
+                                    </p>
+                                </td>
+
+                                <td class="px-8 py-6 text-right font-semibold text-lg text-title">
+                                    ₱<?= number_format($order['total_amount'], 2) ?>
+                                </td>
+
+                                <td class="px-8 py-6 text-right font-semibold text-lg text-title">
+                                    ₱<?= number_format($order['amount_paid'] ?? 0, 2) ?>
+                                </td>
+
+                                <td class="px-8 py-6 text-right font-semibold text-title">
+                                    ₱<?= number_format(($order['amount_paid'] ?? 0) - $order['total_amount'], 2) ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>

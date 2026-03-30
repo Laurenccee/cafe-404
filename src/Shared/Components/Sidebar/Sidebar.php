@@ -7,8 +7,8 @@ class Sidebar
 {
     public static function render($activeUser = 'Admin')
     {
-        // Get the current path (e.g., /cafe_404/menu)
         $currentUri = $_SERVER['REQUEST_URI'];
+        $userRole = (int) ($_SESSION['role_id'] ?? -1);
 
         ob_start();
         ?>
@@ -23,18 +23,16 @@ class Sidebar
                 $menuItems = [
                     ['label' => 'Overview', 'path' => '/cafe_404/dashboard'],
                     ['label' => 'Menu Management', 'path' => '/cafe_404/menu'],
-                    ['label' => 'User Management', 'path' => '/cafe_404/users'],
                     ['label' => 'Order History', 'path' => '/cafe_404/order/history'],
                 ];
 
+                if ($userRole === 0) {
+                    array_splice($menuItems, 2, 0, [['label' => 'User Management', 'path' => '/cafe_404/users']]);
+                }
+
                 foreach ($menuItems as $item):
-                    // Check if current URI starts with the item path
                     $isActive = strpos($currentUri, $item['path']) !== false;
-
-                    // Base classes for every link
                     $classes = "transition-all duration-300 pb-1 w-max border-b-2 ";
-
-                    // Active vs Inactive classes
                     $classes .= $isActive
                         ? "text-[#002c02] border-[#002c02]"
                         : "text-subtitle border-transparent hover:text-[#79573f] hover:border-[#79573f]";
@@ -45,23 +43,24 @@ class Sidebar
                 <?php endforeach; ?>
             </nav>
 
-            <div class="mt-auto p-10">
+            <div class="mt-auto p-10 flex flex-col gap-4">
                 <?= Button::render("Point-Of-Sale", [
                     "href" => "/cafe_404/pos",
                     "trailing" => 'arrow-right',
                     'variant' => 'tertiary',
                 ]); ?>
-            </div>
-            <div class="mt-auto p-10">
-                <p class="text-xs text-subtitle uppercase opacity-50 mb-2 tracking-widest">Authenticated as</p>
-                <p class="serif-display text-title text-lg capitalize mb-6">
-                    <?= htmlspecialchars($activeUser) ?>
-                </p>
-                <?= Button::render("Logout", [
-                    "href" => "/cafe_404/logout",
-                    "trailing" => 'arrow-right',
-                    'variant' => 'primary',
-                ]); ?>
+
+                <div class="pt-6 border-t border-[#6f4e37]/10">
+                    <p class="text-xs text-subtitle uppercase opacity-50 mb-2 tracking-widest">Authenticated as</p>
+                    <p class="serif-display text-title text-lg capitalize mb-6">
+                        <?= htmlspecialchars($activeUser) ?>
+                    </p>
+                    <?= Button::render("Logout", [
+                        "href" => "/cafe_404/logout",
+                        "trailing" => 'arrow-right',
+                        'variant' => 'primary',
+                    ]); ?>
+                </div>
             </div>
         </aside>
         <?php
