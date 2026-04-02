@@ -13,7 +13,7 @@ class UserModel
             SELECT u.*, r.role_name 
             FROM users u
             LEFT JOIN roles r ON u.role_id = r.id 
-            WHERE u.username = ?
+            WHERE u.username = ? AND u.deleted_at IS NULL
         ");
         $stmt->execute([$username]);
         return $stmt->fetch();
@@ -24,6 +24,7 @@ class UserModel
             SELECT u.id, u.username, u.role_id, u.created_at, r.role_name 
             FROM users u
             LEFT JOIN roles r ON u.role_id = r.id 
+            WHERE u.deleted_at IS NULL 
             ORDER BY u.created_at DESC
         ");
         $stmt->execute();
@@ -39,7 +40,7 @@ class UserModel
         $sql = "SELECT u.*, r.role_name 
             FROM users u 
             LEFT JOIN roles r ON u.role_id = r.id 
-            WHERE u.id = ?";
+            WHERE u.id = :id AND u.deleted_at IS NULL";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([(int) $id]);
@@ -75,7 +76,7 @@ class UserModel
     }
     public function deleteUser($id)
     {
-        $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
-        return $stmt->execute([$id]);
+        $stmt = $this->db->prepare("UPDATE users SET deleted_at = NOW() WHERE id = ?");
+        return $stmt->execute([(int) $id]);
     }
 }

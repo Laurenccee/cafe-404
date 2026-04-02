@@ -15,7 +15,6 @@ class ComboBoxField
 
         $id = "combo_" . uniqid();
 
-        // Find the initial label for the selected value
         $initialLabel = $placeholder;
         foreach ($options as $opt) {
             if ($opt['value'] == $selected) {
@@ -85,7 +84,6 @@ class ComboBoxField
                         });
                     });
 
-                    // Close if clicked outside
                     document.addEventListener('click', (e) => {
                         if (!combo.contains(e.target)) {
                             menu.classList.add('hidden');

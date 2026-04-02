@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Noto+Serif:wght@400;700&display=swap');
 
-/* Custom global styles */
 body {
   @apply bg-background;
 }
@@ -26,7 +25,6 @@ button {
   @apply bg-primary text-white rounded px-4 py-2;
 }
 
-/* Custom Theme */
 :root {
   --color-primary: #2d5a27; /* Example primary color */
   --color-secondary: #6f4e37;
@@ -39,10 +37,6 @@ button {
   --font-sans: 'Noto Serif', sans-serif;
   --font-serif: 'Manrope', serif;
 }
-
-/* Define CSS Variables for the Theme */
-
-/* Apply theme colors */
 
 .font-sans-serif {
   font-family: var(--font-sans);
@@ -70,7 +64,6 @@ button {
   border-color: var(--color-secondary);
 }
 
-/* Apply the Theme to Tailwind Classes */
 @layer base {
   body {
     background-color: var(--background-color);
@@ -99,7 +92,6 @@ button {
   }
 }
 
-/* Explicitly define bg-background class */
 .bg-background {
   background-color: var(--color-background);
 }

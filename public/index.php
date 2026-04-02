@@ -3,9 +3,7 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-// public/index.php
 define('BASE_URL', '/cafe_404');
-// 1. Setup Environment
 define('ROOT_PATH', $_SERVER['DOCUMENT_ROOT'] . '/cafe_404/');
 require_once ROOT_PATH . 'src/autoload.php';
 
@@ -117,6 +115,12 @@ switch ($route) {
         $userController->update($id);
         break;
 
+    case '/users/delete':
+        protect_admin_only($basePath);
+        $id = $_GET['id'] ?? null;
+        $userController->delete($id);
+        break;
+
     case '/menu':
         protect_manager_access($basePath);
         $menuController->index();
@@ -142,6 +146,12 @@ switch ($route) {
         protect_manager_access($basePath);
         $id = $_GET['id'] ?? $_POST['id'] ?? null;
         $menuController->update($id);
+        break;
+
+    case '/menu/delete':
+        protect_manager_access($basePath);
+        $id = $_GET['id'] ?? null;
+        $menuController->delete($id);
         break;
 
     case '/pos':

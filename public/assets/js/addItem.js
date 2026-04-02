@@ -35,7 +35,6 @@ function renderOrder() {
     lucide.createIcons();
     return;
   }
-  console.log('Rendering order with items:', currentOrder);
   let total = 0;
   container.innerHTML = currentOrder
     .map((item) => {
@@ -75,7 +74,6 @@ function renderOrder() {
     });
   }
 
-  // Refresh icons for the newly injected HTML
   lucide.createIcons();
 }
 
@@ -85,23 +83,19 @@ function clearOrder() {
 }
 
 async function processCheckout() {
-  // 1. Validate Cart
   if (currentOrder.length === 0) {
     alert('Wait! The cart is empty.');
     return;
   }
 
-  // 2. Get Payment Data
   const cashInput = document.getElementById('cash-amount');
   const amountReceived = parseFloat(cashInput.value) || 0;
 
-  // Get total from UI (strips ₱ and commas)
   const total = currentOrder.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
 
-  // 3. Security Check: Ensure enough cash was given
   if (amountReceived < total) {
     alert(
       `Insufficient cash! You still need ₱${(total - amountReceived).toFixed(2)}`,
@@ -112,24 +106,21 @@ async function processCheckout() {
   const formattedItems = currentOrder.map((item) => ({
     id: parseInt(item.id),
     quantity: parseInt(item.quantity),
-    price: parseFloat(item.price), // Convert '165.00' string to 165.00 number
+    price: parseFloat(item.price),
   }));
-  // 4. Prepare the JSON package to match your Controller's expectations
   const orderData = {
     items: formattedItems,
     total_amount: total,
-    amount_received: amountReceived, // Matches $data['amount_received'] in Controller
+    amount_received: amountReceived,
   };
 
   try {
-    // NOTE: Update this URL to match your routing system (e.g., /cafe_404/orders/checkout)
     const response = await fetch('/cafe_404/pos/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData),
     });
 
-    // Check if response is actually JSON (important for debugging PHP errors)
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       throw new TypeError("Oops, the server didn't send back JSON!");
@@ -140,11 +131,9 @@ async function processCheckout() {
     if (result.success) {
       alert('✨ Order Placed Successfully!');
 
-      // 5. Reset the UI
       currentOrder = [];
       cashInput.value = '';
 
-      // If you have a change display, clear it too
       const changeDisplay = document.getElementById('change-display');
       if (changeDisplay) changeDisplay.style.opacity = '0';
 

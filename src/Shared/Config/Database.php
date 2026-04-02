@@ -1,5 +1,4 @@
 <?php
-// src/Shared/Config/Database.php
 namespace App\Shared\Config;
 
 use PDO;
@@ -58,9 +57,15 @@ class Database
         password VARCHAR(255) NOT NULL,
         role_id INT DEFAULT 2, 
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        deleted_at DATETIME NULL DEFAULT NULL,
         FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
     ) ENGINE=InnoDB;";
         $pdo->exec($sqlUsers);
+
+        $checkColumn = $pdo->query("SHOW COLUMNS FROM users LIKE 'deleted_at'");
+        if ($checkColumn->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL");
+        }
 
         $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role_id = 0");
         if ($stmt->fetchColumn() == 0) {
@@ -113,10 +118,16 @@ class Database
 
         is_available TINYINT(1) DEFAULT 1,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        deleted_at DATETIME NULL DEFAULT NULL,
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
     ) ENGINE=InnoDB;";
 
         $pdo->exec($sqlMenus);
+
+        $checkMenuColumn = $pdo->query("SHOW COLUMNS FROM menu_items LIKE 'deleted_at'");
+        if ($checkMenuColumn->rowCount() == 0) {
+            $pdo->exec("ALTER TABLE menu_items ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL");
+        }
 
         $sqlOrders = "CREATE TABLE IF NOT EXISTS orders (
         id INT AUTO_INCREMENT PRIMARY KEY,

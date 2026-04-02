@@ -111,7 +111,7 @@ class MenuController
                 'image_path' => $imageName,
                 'pos_x' => (float) $posX,
                 'pos_y' => (float) $posY,
-                'is_available' => $_POST['is_available'] ?? 1
+                'is_available' => $_POST['is_available'] ?? 1,
             ];
             if ($this->menuModel->addItem($data)) {
                 header('Location: /cafe_404/menu?success=1');
@@ -126,6 +126,24 @@ class MenuController
             $existingItem = $this->menuModel->getItemById($id);
             $imageName = $existingItem['image_path'];
             $uploadDir = ROOT_PATH . 'public/images/uploads/menu/';
+
+            $categoryId = $_POST['category_id'] ?? $existingItem['category_id'];
+            $productCode = $existingItem['product_code'];
+
+            if ($categoryId != $existingItem['category_id']) {
+                $category = $this->menuModel->getCategoryById($categoryId);
+                $categoryName = strtolower($category['category_name'] ?? '');
+
+                if (str_contains($categoryName, 'espresso')) {
+                    $prefix = 'ESP-';
+                } elseif (str_contains($categoryName, 'pastry')) {
+                    $prefix = 'PAS-';
+                } else {
+                    $prefix = 'CB-';
+                }
+
+                $productCode = $prefix . strtoupper(substr(uniqid(), -5));
+            }
 
             if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] === UPLOAD_ERR_OK) {
                 $fileTmpPath = $_FILES['product_image']['tmp_name'];
@@ -142,14 +160,15 @@ class MenuController
             }
 
             $data = [
+                'product_code' => $productCode,
                 'name' => $_POST['name'],
                 'description' => $_POST['description'],
                 'price' => (float) $_POST['price'],
-                'category_id' => $_POST['category_id'],
+                'category_id' => $categoryId,
                 'image_path' => $imageName,
                 'pos_x' => $_POST['product_image_pos_x'] ?? $existingItem['pos_x'],
                 'pos_y' => $_POST['product_image_pos_y'] ?? $existingItem['pos_y'],
-                'is_available' => $_POST['is_available'] ?? 1,
+                'is_available' => $_POST['is_available'] ?? $existingItem['is_available'],
             ];
 
             if ($this->menuModel->updateItem($id, $data)) {
@@ -158,5 +177,16 @@ class MenuController
             }
         }
     }
-
+    public function delete($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            if ($this->menuModel->deleteItem($id)) {
+                header('Location: /cafe_404/menu?deleted=1');
+                exit;
+            } else {
+                header('Location: /cafe_404/menu?error=delete_failed');
+                exit;
+            }
+        }
+    }
 }

@@ -155,12 +155,12 @@ foreach ($availability as $status) {
                                         title="Edit">
                                         <i data-lucide="edit-2" class="size-4"></i>
                                     </a>
-                                    <button
-                                        onclick="confirmDelete(<?= $item['id'] ?>, '<?= htmlspecialchars($item['name']) ?>')"
+                                    <a href="/cafe_404/menu/delete?id=<?= $item['id'] ?>"
                                         class="p-2 bg-white/30 hover:bg-rose-200 rounded-sm transition-colors text-rose-400 hover:text-rose-600"
-                                        title="Delete">
+                                        title="Delete"
+                                        onclick="return confirm('Are you sure you want to delete this item?');">
                                         <i data-lucide="trash-2" class="size-4"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -192,11 +192,3 @@ foreach ($availability as $status) {
 $content = ob_get_clean();
 require_once ROOT_PATH . 'src/Shared/Layouts/layout.php';
 ?>
-
-<script>
-    function confirmDelete(id, name) {
-        if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
-            window.location.href = `/cafe_404/menu/delete?id=${id}`;
-        }
-    }
-</script>

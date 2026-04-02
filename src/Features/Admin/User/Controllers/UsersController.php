@@ -107,4 +107,16 @@ class UsersController
 
     }
 
+    public function delete($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            if ($this->userModel->deleteUser($id)) {
+                header('Location: /cafe_404/users?deleted=1');
+                exit;
+            } else {
+                header('Location: /cafe_404/users?error=delete_failed');
+                exit;
+            }
+        }
+    }
 }

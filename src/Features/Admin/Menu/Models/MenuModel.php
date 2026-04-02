@@ -14,6 +14,7 @@ class MenuModel
         $sql = "SELECT m.*, c.category_name 
             FROM menu_items m 
             LEFT JOIN categories c ON m.category_id = c.id 
+            WHERE m.deleted_at IS NULL 
             ORDER BY m.created_at DESC";
         return $this->db->query($sql)->fetchAll();
     }
@@ -22,7 +23,7 @@ class MenuModel
         $sql = "SELECT m.*, c.category_name 
             FROM menu_items m 
             LEFT JOIN categories c ON m.category_id = c.id 
-            WHERE m.id = :id";
+            WHERE m.id = :id AND m.deleted_at IS NULL";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id' => $id]);
@@ -35,7 +36,7 @@ class MenuModel
         SELECT m.*, c.category_name 
         FROM menu_items m
         JOIN categories c ON m.category_id = c.id
-        WHERE m.category_id = :cat_id AND m.is_available = 1
+        WHERE m.category_id = :cat_id AND m.is_available = 1 AND m.deleted_at IS NULL
     ");
         $stmt->execute(['cat_id' => $categoryId]);
         return $stmt->fetchAll();
@@ -58,14 +59,14 @@ class MenuModel
 
     public function addItem($data)
     {
-        $sql = "INSERT INTO menu_items (product_code, name, description, price, category_id, image_path, pos_x, pos_y) 
-        VALUES (:product_code, :name, :description, :price, :category_id, :image_path, :pos_x, :pos_y)";
+        $sql = "INSERT INTO menu_items (product_code, name, description, price, category_id, image_path, pos_x, pos_y, is_available) 
+        VALUES (:product_code, :name, :description, :price, :category_id, :image_path, :pos_x, :pos_y, :is_available)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($data);
     }
     public function updateItem($id, $data)
     {
-        $sql = "UPDATE menu_items SET name = :name, is_available = :is_available, description = :description, price = :price, category_id = :category_id, image_path = :image_path, pos_x = :pos_x, pos_y = :pos_y WHERE id = :id";
+        $sql = "UPDATE menu_items SET product_code = :product_code, name = :name, is_available = :is_available, description = :description, price = :price, category_id = :category_id, image_path = :image_path, pos_x = :pos_x, pos_y = :pos_y WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         $data['id'] = $id;
         return $stmt->execute($data);
@@ -73,11 +74,11 @@ class MenuModel
 
     public function getTotalCount()
     {
-        return $this->db->query("SELECT COUNT(*) FROM menu_items")->fetchColumn();
+        return $this->db->query("SELECT COUNT(*) FROM menu_items WHERE deleted_at IS NULL")->fetchColumn();
     }
     public function getInStockCount()
     {
-        return $this->db->query("SELECT COUNT(*) FROM menu_items WHERE is_available = 1")->fetchColumn();
+        return $this->db->query("SELECT COUNT(*) FROM menu_items WHERE is_available = 1 AND deleted_at IS NULL")->fetchColumn();
     }
 
     public function getItemsPaginated($limit, $offset)
@@ -85,6 +86,7 @@ class MenuModel
         $sql = "SELECT m.*, c.category_name 
             FROM menu_items m 
             LEFT JOIN categories c ON m.category_id = c.id 
+            WHERE m.deleted_at IS NULL 
             ORDER BY m.created_at DESC 
             LIMIT :limit OFFSET :offset";
 
@@ -96,29 +98,11 @@ class MenuModel
         return $stmt->fetchAll();
     }
 
-    public function deleteItem()
+    public function deleteItem($id)
     {
-        $id = $_GET['id'] ?? null;
-
-        if (!$id) {
-            header('Location: /cafe_404/menu?error=missing_id');
-            exit;
-        }
-
-        if ((int) $_SESSION['role_id'] !== 0) {
-            header('Location: /cafe_404/menu?error=unauthorized');
-            exit;
-        }
-
-        $stmt = $this->db->prepare("DELETE FROM menu_items WHERE id = ?");
-        $success = $stmt->execute([$id]);
-
-        if ($success) {
-            header('Location: /cafe_404/menu?success=item_deleted');
-        } else {
-            header('Location: /cafe_404/menu?error=delete_failed');
-        }
-        exit;
+        $sql = "UPDATE menu_items SET deleted_at = NOW() WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['id' => $id]);
     }
     public function getFilteredItems($filters, $limit, $offset)
     {
@@ -129,7 +113,7 @@ class MenuModel
         $sql = "SELECT m.*, c.category_name 
             FROM menu_items m 
             LEFT JOIN categories c ON m.category_id = c.id 
-            WHERE 1=1";
+            WHERE m.deleted_at IS NULL";
 
         $params = [];
 
@@ -164,7 +148,7 @@ class MenuModel
     }
     public function getFilteredCount($filters)
     {
-        $sql = "SELECT COUNT(*) FROM menu_items WHERE 1=1";
+        $sql = "SELECT COUNT(*) FROM menu_items WHERE deleted_at IS NULL";
         $params = [];
 
         if (!empty($filters['search'])) {

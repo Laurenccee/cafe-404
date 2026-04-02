@@ -105,12 +105,12 @@ ob_start();
                                         <i data-lucide="edit" class="size-5"></i>
                                     </a>
 
-                                    <button
-                                        onclick="confirmDelete(<?= $user['id'] ?>, '<?= htmlspecialchars($user['username']) ?>')"
+                                    <a href="/cafe_404/users/delete?id=<?= $user['id'] ?>"
                                         class="p-2 hover:bg-red-50 rounded-md transition-colors text-secondary hover:text-red-500"
-                                        title="Delete User">
+                                        title="Delete User"
+                                        onclick="return confirm('Are you sure you want to remove this user from the Ledger?');">
                                         <i data-lucide="trash" class="size-5"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -127,22 +127,3 @@ require_once ROOT_PATH . 'src/Shared/Layouts/layout.php';
 
 
 ?>
-<script>
-    function confirmDelete(id, username) {
-        if (confirm(`Are you sure you want to remove ${username} from the Ledger?`)) {
-            // Create a hidden form to send the POST request
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/cafe_404/users/delete';
-
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'id';
-            input.value = id;
-
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
-</script>
