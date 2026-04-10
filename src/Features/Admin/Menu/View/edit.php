@@ -6,7 +6,7 @@ use App\Shared\Components\InputField\InputField;
 use App\Shared\Components\TextArea;
 use App\Shared\Components\FileDrop;
 
-$pageTitle = 'The Editorial Barista | Management';
+$pageTitle = 'MenuManagement';
 $now = new DateTimeImmutable();
 ob_start();
 ?>

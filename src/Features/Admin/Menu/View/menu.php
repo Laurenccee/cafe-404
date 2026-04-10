@@ -4,7 +4,7 @@ use App\Shared\Components\Button\Button;
 use App\Shared\Components\ComboBox\ComboBoxField;
 use App\Shared\Components\InputField\InputField;
 
-$pageTitle = 'The Editorial Barista | Management';
+$pageTitle = 'Menu Management';
 $now = new DateTimeImmutable();
 ob_start();
 ?>
@@ -14,6 +14,7 @@ $categories = $categories ?? [];
 
 $menuItems = $menuItems ?? [];
 $inStockCount = $inStockCount ?? 0;
+$totalCount = $totalCount ?? 0;
 $adminInfo = $adminInfo ?? ['username' => 'Guest'];
 
 $availabilityMap = [];
@@ -48,7 +49,7 @@ foreach ($availability as $status) {
                 <div class="p-6 col-span-1 bg-[#F0EDED] rounded-xl">
                     <span class="text-sm opacity-60 font-bold uppercase tracking-widest">Total Items</span>
                     <p class="text-4xl text-title font-semibold mt-2">
-                        <?= count($menuItems) ?>
+                        <?= $totalCount ?>
                     </p>
                 </div>
                 <div class="p-6 col-span-1 bg-[#e4e4cc] rounded-xl">
@@ -103,10 +104,10 @@ foreach ($availability as $status) {
                                 ], $availability),
 
                             ),
-                            "value" => $_GET['available'] ?? '',
+                            "value" => $_GET['availability'] ?? '',
                             "placeholder" => "Filter by Availability",
                             "disabled" => true,
-                            "name" => "available"
+                            "name" => "availability"
                         ]) ?>
                     </div>
                 </div>

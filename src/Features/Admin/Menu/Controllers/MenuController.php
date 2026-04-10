@@ -33,6 +33,7 @@ class MenuController
         $categories = $this->menuModel->getAllCategories();
         $availability = $this->menuModel->getAllAvailability();
         $inStockCount = $this->menuModel->getInStockCount();
+        $totalCount = $this->menuModel->getTotalCount();
 
         require_once ROOT_PATH . 'src/Features/Admin/Menu/View/menu.php';
     }

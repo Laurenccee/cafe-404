@@ -5,7 +5,7 @@ use App\Shared\Components\ComboBox\ComboBoxField;
 use App\Shared\Components\InputField\InputField;
 use App\Shared\Components\Badge;
 
-$pageTitle = 'The Editorial Barista | Management';
+$pageTitle = 'User Management';
 $now = new DateTimeImmutable();
 ob_start();
 ?>

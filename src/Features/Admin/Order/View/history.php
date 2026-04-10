@@ -2,7 +2,7 @@
 use App\Shared\Components\Sidebar\Sidebar;
 use App\Shared\Components\InputField\InputField;
 
-$pageTitle = 'The Editorial Ledger | History';
+$pageTitle = 'Order History';
 $now = new DateTimeImmutable();
 ob_start();
 ?>

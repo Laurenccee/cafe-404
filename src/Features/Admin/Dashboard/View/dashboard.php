@@ -2,7 +2,7 @@
 use App\Shared\Components\Sidebar\Sidebar;
 use App\Shared\Components\Button\Button;
 
-$pageTitle = 'The Editorial Barista | Management';
+$pageTitle = 'Dashboard Management';
 $now = new DateTimeImmutable();
 ob_start();
 ?>
