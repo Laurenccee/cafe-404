@@ -163,17 +163,22 @@ foreach ($availability as $status) {
                                 </p>
                             </div>
                             <div class="flex flex-col gap-3">
-                                <?= Button::render("Add Item", [
-                                    "leading" => "plus",
-                                    "variant" => "tertiary",
-                                    "disabled" => !$item['is_available'],
-                                    "onclick" => "addToOrder(" . htmlspecialchars(json_encode([
+                            <?php 
+                                // Get the specific status label for this item
+                                $currentStatus = strtolower($availabilityMap[$item['is_available']]['label'] ?? 'available');
+                                
+                                echo Button::render("Add Item", [
+                                    "leading"      => "plus",
+                                    "variant"      => "tertiary",
+                                    "availability" => $currentStatus, // Pass the status here
+                                    "onclick"      => "addToOrder(" . htmlspecialchars(json_encode([
                                         'id' => $item['id'],
                                         'name' => $item['name'],
                                         'price' => $item['price'],
                                         'image_path' => $item['image_path']
                                     ])) . ")"
-                                ]) ?>
+                                ]); 
+                            ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
