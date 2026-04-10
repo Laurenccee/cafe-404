@@ -19,8 +19,20 @@ $adminInfo = $adminInfo ?? ['username' => 'Guest'];
 
 $availabilityMap = [];
 foreach ($availability as $status) {
+    $colorClass = 'bg-gray-400';
+    
+    $label = strtolower($status['label']);
+    if (str_contains($label, 'available') && !str_contains($label, 'not')) {
+        $colorClass = 'bg-emerald-500';
+    } elseif (str_contains($label, 'not available')) {
+        $colorClass = 'bg-rose-500';
+    } elseif (str_contains($label, 'sold out')) {
+        $colorClass = 'bg-amber-500';
+    }
+
     $availabilityMap[$status['id']] = [
         'label' => $status['label'],
+        'class' => $colorClass
     ];
 }
 ?>
@@ -124,18 +136,18 @@ foreach ($availability as $status) {
                                     alt="<?= htmlspecialchars($item['name']) ?>"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     style="object-position: <?= $item['pos_x'] ?>% <?= $item['pos_y'] ?>%;">
-
                                 <div class="absolute top-3 left-3">
                                     <?php
-                                    $status = $availabilityMap[$item['is_available']] ?? ['label' => 'Unknown'];
+                                    $status = $availabilityMap[$item['is_available']] ?? [
+                                        'label' => 'Unknown', 
+                                        'class' => 'bg-gray-400'
+                                    ];
                                     ?>
-                                    <span
-                                        class="px-3 py-1 text-white text-[10px] font-bold uppercase rounded-full backdrop-blur-md">
-                                        <?= $status['label'] ?>
+                                    <span class="px-3 py-1 text-white text-[10px] font-bold uppercase rounded-full backdrop-blur-md <?= $status['class'] ?>">
+                                        <?= htmlspecialchars($status['label']) ?>
                                     </span>
                                 </div>
                             </div>
-
                             <div class="flex flex-col gap-1 px-1">
                                 <span class="text-xs text-subtitle uppercase tracking-tighter opacity-60 font-bold">
                                     <?= $item['category_name'] ?>
@@ -146,11 +158,10 @@ foreach ($availability as $status) {
                                         ₱<?= number_format($item['price'], 2) ?>
                                     </span>
                                 </div>
-                                <p class="text-xs text-subtitle opacity-80 line-clamp-2 h-8 leading-relaxed">
+                                <p class="text-xs text-subtitle truncate opacity-80 h-8 leading-relaxed">
                                     <?= $item['description'] ?>
                                 </p>
                             </div>
-
                             <div class="flex flex-col gap-3">
                                 <?= Button::render("Add Item", [
                                     "leading" => "plus",

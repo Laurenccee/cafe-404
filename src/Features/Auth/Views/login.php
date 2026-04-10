@@ -56,9 +56,7 @@ ob_start();
 </main>
 
 <?php
-// Capture the buffered HTML
 $content = ob_get_clean();
 
-// Load the master layout that wraps the content
 require_once __DIR__ . '/../../../Shared/Layouts/layout.php';
 ?>

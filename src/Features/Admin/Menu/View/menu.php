@@ -19,8 +19,20 @@ $adminInfo = $adminInfo ?? ['username' => 'Guest'];
 
 $availabilityMap = [];
 foreach ($availability as $status) {
+    $colorClass = 'bg-gray-400';
+    
+    $label = strtolower($status['label']);
+    if (str_contains($label, 'available') && !str_contains($label, 'not')) {
+        $colorClass = 'bg-emerald-500';
+    } elseif (str_contains($label, 'not available')) {
+        $colorClass = 'bg-rose-500';
+    } elseif (str_contains($label, 'sold out')) {
+        $colorClass = 'bg-amber-500';
+    }
+
     $availabilityMap[$status['id']] = [
         'label' => $status['label'],
+        'class' => $colorClass
     ];
 }
 ?>
@@ -126,11 +138,13 @@ foreach ($availability as $status) {
                                     style="object-position: <?= $item['pos_x'] ?>% <?= $item['pos_y'] ?>%;">
                                 <div class="absolute top-3 left-3">
                                     <?php
-                                    $status = $availabilityMap[$item['is_available']] ?? ['label' => 'Unknown'];
+                                    $status = $availabilityMap[$item['is_available']] ?? [
+                                        'label' => 'Unknown', 
+                                        'class' => 'bg-gray-400'
+                                    ];
                                     ?>
-                                    <span
-                                        class="px-3 py-1 text-white text-[10px] font-bold uppercase rounded-full backdrop-blur-md">
-                                        <?= $status['label'] ?>
+                                    <span class="px-3 py-1 text-white text-[10px] font-bold uppercase rounded-full backdrop-blur-md <?= $status['class'] ?>">
+                                        <?= htmlspecialchars($status['label']) ?>
                                     </span>
                                 </div>
                             </div>
@@ -142,7 +156,7 @@ foreach ($availability as $status) {
                                     <span class="text-[10px] opacity-80 font-mono"><?= $item['product_code'] ?></span>
                                 </div>
                                 <h3 class="serif-display text-xl text-title truncate"><?= $item['name'] ?></h3>
-                                <p class="text-xs text-subtitle opacity-80 line-clamp-2 truncate h-8 leading-relaxed">
+                                <p class="text-xs text-subtitle opacity-80 capitalize truncate h-8 leading-relaxed">
                                     <?= $item['description'] ?>
                                 </p>
                             </div>
