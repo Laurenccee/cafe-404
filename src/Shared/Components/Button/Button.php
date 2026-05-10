@@ -11,6 +11,7 @@ class Button
         $class = $props['class'] ?? '';
         $size = $props['size'] ?? 'md';
         $onclick = $props['onclick'] ?? '';
+        $type = $props['type'] ?? 'submit';
         
         $availability = strtolower($props['availability'] ?? ''); 
         $isDisabled = ($availability !== 'available' && $availability !== '' || ($props['disabled'] ?? false));
@@ -43,9 +44,8 @@ class Button
 
         $tagName = $href ? 'a' : 'button';
         $disabledAttr = $isDisabled ? 'disabled' : '';
-        $attributes = $href ? "href='{$href}'" : "type='button'";
+        $attributes = $href ? "href='{$href}'" : "type='{$type}'";
 
-        // Change text to the status (e.g., "SOLD OUT") if disabled
         $displayText = ($isDisabled) ? strtoupper($availability) : $text;
 
         return "

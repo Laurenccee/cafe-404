@@ -36,17 +36,17 @@ class UserModel
         return $this->db->query($sql)->fetchAll();
     }
     public function getUserById($id)
-    {
-        $sql = "SELECT u.*, r.role_name 
+{
+    $sql = "SELECT u.*, r.role_name 
             FROM users u 
             LEFT JOIN roles r ON u.role_id = r.id 
-            WHERE u.id = :id AND u.deleted_at IS NULL";
+            WHERE u.id = ? AND u.deleted_at IS NULL"; // Changed :id to ?
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([(int) $id]);
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([(int) $id]); // Now this positional array works
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
-    }
+    return $stmt->fetch(\PDO::FETCH_ASSOC);
+}
     public function createUser($username, $hashedPassword, $roleId)
     {
         $sql = "INSERT INTO users (username, password, role_id, created_at) 

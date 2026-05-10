@@ -13,9 +13,14 @@ class Sidebar
         ob_start();
         ?>
         <aside class="min-w-[18rem] flex flex-col bg-[#f5f1f0] min-h-screen border-r-2 border-[#6f4e37]/10">
-            <div class="serif-display p-10 tracking-tight text-[#002c02]">
-                <h1 class="text-2xl font-black text-title">Coffee 404</h1>
-                <p class="text-sm text-subtitle italic">Coffee not found!</p>
+            <div class="p-10 flex-col gap-6">
+                <div class="flex flex-col items-center gap-2">
+                    <img src="/cafe_404/public/assets/images/logo/logo.png" alt="Coffee 404 Logo" class="w-48">
+                </div>
+                <div class="serif-display flex flex-col justify-center items-center tracking-tight text-[#002c02]">
+                    <h1 class="text-2xl font-black text-title">Coffee 404</h1>
+                    <p class="text-sm text-subtitle italic">Coffee not found!</p>
+                </div>
             </div>
 
             <nav class="flex flex-col bg-white p-10 gap-6 text-sm uppercase tracking-widest font-bold">

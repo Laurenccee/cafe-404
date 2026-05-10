@@ -57,7 +57,7 @@ ob_start();
 
                 <div class="flex flex-col gap-6">
                     <?= Button::render("Save Changes", [
-                        "type" => "submit",
+                        "type" => 'submit',
                         "trailing" => 'check',
                         'variant' => 'primary',
                     ]); ?>
